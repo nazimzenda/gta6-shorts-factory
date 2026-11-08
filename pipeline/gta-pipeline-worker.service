@@ -1,0 +1,21 @@
+[Unit]
+Description=GTA 6 Shorts Factory — CUA pipeline worker
+Documentation=file:///home/zenda/gta_Automation/docs/CUA_PIPELINE.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/zenda/gta_Automation
+# The application reads .env itself; this is only for systemd's environment.
+EnvironmentFile=-/home/zenda/gta_Automation/.env
+# Dry run by default. Change --dry-run to --live only after reviewing the
+# first cycle's screenshots and platform results.
+ExecStart=/home/zenda/gta_Automation/.venv/bin/python -m pipeline.run worker --interval 3600 --dry-run
+Restart=on-failure
+RestartSec=120
+KillSignal=SIGINT
+TimeoutStopSec=180
+
+[Install]
+WantedBy=default.target

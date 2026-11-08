@@ -1,0 +1,15 @@
+metadata:
+  generated: "2026-11-07"
+  source_plan: ".github/modernize/gta6-shorts-factory/plan.md"
+  target_tasks: ".github/modernize/gta6-shorts-factory/plan.md"
+summary:
+  total_plan_items: 12
+  covered_plan_items: 12
+  missing_plan_items: 0
+  coverage_percentage: 100.0
+  total_tasks_generated: 12
+  orphan_tasks: 0
+validation:
+  passed: true
+  errors: []
+  warnings: []

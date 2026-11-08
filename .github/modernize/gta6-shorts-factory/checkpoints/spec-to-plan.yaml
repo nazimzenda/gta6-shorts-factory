@@ -1,0 +1,14 @@
+metadata:
+  generated: "2026-11-07"
+  source_spec: "GTA6_SHORTS_FACTORY_AGENT_BRIEF.md"
+  target_plan: ".github/modernize/gta6-shorts-factory/plan.md"
+summary:
+  total_requirements: 10
+  covered_requirements: 10
+  missing_requirements: 0
+  coverage_percentage: 100.0
+validation:
+  passed: true
+  errors: []
+  warnings:
+    - "Requirements were normalized from the narrative brief because the original brief had no REQ identifiers."

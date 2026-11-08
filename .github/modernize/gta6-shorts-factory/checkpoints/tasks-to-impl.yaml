@@ -1,0 +1,85 @@
+metadata:
+  generated: "2026-11-07"
+  source_tasks: ".github/modernize/gta6-shorts-factory/plan.md"
+  last_updated: "2026-11-07"
+summary:
+  total_tasks: 12
+  completed_tasks: 4
+  in_progress_tasks: 0
+  pending_tasks: 8
+  completion_percentage: 33.33
+tasks:
+  - task_id: "T001"
+    description: "Create Python package, safe configuration, health endpoint, dashboard summary endpoint, and baseline tests."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "pyproject.toml"
+          change_type: "added"
+        - file: "app/main.py"
+          change_type: "added"
+        - file: "app/config.py"
+          change_type: "added"
+        - file: "app/models.py"
+          change_type: "added"
+        - file: "tests/test_dashboard.py"
+          change_type: "added"
+    verification:
+      build_passed: true
+      test_results:
+        command: ".venv/bin/pytest -q"
+        passed: 2
+        failed: 0
+        skipped: 0
+        failures: []
+      endpoint_probes:
+        - method: "GET"
+          path: "/health"
+          status: 200
+        - method: "GET"
+          path: "/api/dashboard/summary"
+          status: 200
+      notes: "Everygen.ai and CUA are disabled by default."
+    upstream_trace:
+      plan_item: "1.1"
+      requirements: ["REQ-001", "REQ-004", "REQ-008"]
+      full_trace: "REQ-001,REQ-004,REQ-008 -> Phase-1.1 -> T001 -> app/main.py, app/config.py, app/models.py"
+pending_tasks:
+  - task_id: "T005"
+    description: "Implement local ingest, hashing, ffprobe inspection, and rights gate."
+    blocked_by: ["T002", "T003"]
+  - task_id: "T006"
+    description: "Implement transcription, highlight candidates, captions, vertical rendering, and QC."
+    blocked_by: ["T005"]
+  - task_id: "T007"
+    description: "Implement AI CEO planning, worker capabilities, queues, retries, pause, and dead-letter handling."
+    blocked_by: ["T002", "T003"]
+  - task_id: "T008"
+    description: "Implement MCP registry, scoped tool calls, and audit events."
+    blocked_by: ["T002"]
+  - task_id: "T009"
+    description: "Implement Everygen provider adapter with quote-before-spend and mocked async jobs."
+    blocked_by: ["T008"]
+  - task_id: "T010"
+    description: "Implement isolated CUA broker with observe and draft modes, allowlists, evidence, and emergency stop."
+    blocked_by: ["T008"]
+  - task_id: "T011"
+    description: "Implement official publishing adapters, approval lock, scheduling, reconciliation, and analytics snapshots."
+    blocked_by: ["T002", "T003"]
+  - task_id: "T012"
+    description: "Add integration, security, recovery, and end-to-end acceptance tests."
+    blocked_by: ["T004", "T006", "T007", "T009", "T010", "T011"]
+traceability_chain:
+  - chain_id: "TRACE-001"
+    requirement: "REQ-001"
+    plan_phase: "Phase-1"
+    plan_item: "1.1"
+    tasks: ["T001"]
+    files: ["app/main.py", "app/config.py", "app/models.py", "tests/test_dashboard.py"]
+    status: "complete"
+validation:
+  passed: true
+  errors: []
+  warnings:
+    - "The remaining 8 tasks require additional implementation batches."
+  blocking_issues: []

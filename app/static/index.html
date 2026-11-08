@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>GTA 6 Shorts Factory · Founder Control Tower</title>
+  <meta name="description" content="Local-first Founder Control Tower for rights-cleared short-form video production." />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/static/styles.css?v=7" />
+</head>
+<body>
+  <div class="grid-overlay" aria-hidden="true"></div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#home" aria-label="Founder Control Tower home">
+        <span class="brand-mark">6</span>
+        <span class="brand-copy">
+          <strong>GTA 6</strong>
+          <span>SHORTS FACTORY</span>
+        </span>
+      </a>
+      <div class="tower-label"><span class="live-dot"></span> FOUNDER CONTROL TOWER</div>
+
+      <nav class="nav" aria-label="Primary">
+        <button class="nav-item" data-view="home"><span class="nav-icon" data-icon="home"></span><span>Founder Home</span></button>
+        <button class="nav-item" data-view="ceo"><span class="nav-icon" data-icon="ceo"></span><span>AI CEO Office</span></button>
+        <button class="nav-item" data-view="departments"><span class="nav-icon" data-icon="dept"></span><span>Departments</span></button>
+        <button class="nav-item" data-view="flow"><span class="nav-icon" data-icon="flow"></span><span>Department Flow</span></button>
+        <button class="nav-item" data-view="projects"><span class="nav-icon" data-icon="projects"></span><span>Projects</span></button>
+        <button class="nav-item" data-view="production"><span class="nav-icon" data-icon="production"></span><span>Production Board</span></button>
+        <button class="nav-item" data-view="approvals"><span class="nav-icon" data-icon="approvals"></span><span>Approvals</span><span class="nav-badge" id="approval-badge" hidden>0</span></button>
+        <button class="nav-item" data-view="assets"><span class="nav-icon" data-icon="assets"></span><span>Assets &amp; Rights</span></button>
+        <button class="nav-item" data-view="integrations"><span class="nav-icon" data-icon="plug"></span><span>Integrations</span></button>
+        <button class="nav-item" data-view="cua"><span class="nav-icon" data-icon="cua"></span><span>CUA Sessions</span></button>
+        <button class="nav-item" data-view="pipeline"><span class="nav-icon" data-icon="pipeline"></span><span>Shorts Pipeline</span></button>
+        <button class="nav-item" data-view="analytics"><span class="nav-icon" data-icon="analytics"></span><span>Analytics &amp; Finance</span></button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="flag-row" id="flag-row">
+          <span class="flag" id="flag-local">LOCAL</span>
+          <span class="flag" id="flag-everygen">EVERYGEN</span>
+          <span class="flag" id="flag-cua">CUA</span>
+          <span class="flag" id="flag-publish">PUBLISH</span>
+        </div>
+        <button class="stop-button" id="stop-button" data-action="toggle-stop">
+          <span class="stop-glyph"></span>
+          <span id="stop-label">EMERGENCY STOP</span>
+        </button>
+        <div class="version-line">v1.0 · LOCAL-FIRST · ALL ACTIONS AUDITED</div>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <header class="topbar">
+        <div class="topbar-title">
+          <span class="eyebrow" id="view-eyebrow">COMMAND CENTER</span>
+          <h1 id="view-title">Founder Home</h1>
+        </div>
+        <div class="topbar-meta">
+          <span class="ws-state" id="ws-state"><span class="ws-dot"></span><span id="ws-label">LIVE FEED</span></span>
+          <span class="topbar-clock" id="clock">--:--:--</span>
+          <span class="system-pill" id="system-pill"><span class="system-dot"></span> OPERATIONAL</span>
+        </div>
+      </header>
+
+      <main id="view" class="view" aria-live="polite">
+        <div class="loading-grid">
+          <div class="skeleton tall"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toast-root" aria-live="polite"></div>
+  <script src="/static/app.js?v=7"></script>
+</body>
+</html>

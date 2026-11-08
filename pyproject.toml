@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gta6-shorts-factory"
+version = "1.0.0"
+description = "Local-first Founder Control Tower for rights-cleared short-form video production"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.30,<1",
+  "pydantic>=2.8,<3",
+  "python-multipart>=0.0.9,<1",
+  "yt-dlp>=2025.1",
+]
+
+[project.scripts]
+gta-pipeline = "pipeline.run:main"
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.27,<1",
+  "pytest>=8.0,<9",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*", "pipeline*"]
+
+[tool.setuptools.package-data]
+app = ["static/*"]
+pipeline = ["guest/*.py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

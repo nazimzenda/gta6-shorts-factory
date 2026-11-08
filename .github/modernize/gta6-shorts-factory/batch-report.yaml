@@ -1,0 +1,116 @@
+batch_id: "B01"
+completed_tasks: ["T001", "T002", "T003", "T004"]
+blocked_tasks: []
+files_changed:
+  T001:
+    - file: "pyproject.toml"
+      change_type: "created"
+      description: "Project metadata and development dependencies"
+    - file: "app/main.py"
+      change_type: "created"
+      description: "FastAPI health and dashboard summary endpoints"
+    - file: "app/config.py"
+      change_type: "created"
+      description: "Safe environment-driven integration flags"
+    - file: "app/models.py"
+      change_type: "created"
+      description: "Typed dashboard and approval models"
+    - file: "tests/test_dashboard.py"
+      change_type: "created"
+      description: "Foundation API and safe-default tests"
+  T002:
+    - file: "app/storage.py"
+      change_type: "created"
+      description: "SQLite schema, repository helpers, and audit event persistence"
+  T003:
+    - file: "app/services.py"
+      change_type: "created"
+      description: "Approval, task, rights gate, provider, and CUA domain services"
+    - file: "app/routes.py"
+      change_type: "created"
+      description: "Approval, task, provider, and CUA API routes"
+  T004:
+    - file: "app/static/index.html"
+      change_type: "created"
+      description: "Founder Control Tower dashboard shell"
+    - file: "app/main.py"
+      change_type: "modified"
+      description: "Serves the dashboard at the root route"
+upstream_artifacts_consumed:
+  T001:
+    - artifact: "GTA6_SHORTS_FACTORY_AGENT_BRIEF.md"
+      used_for: "Founder approval, local-first processing, and optional provider requirements"
+    - artifact: ".github/modernize/assessment/engines/facts/architecture-diagram.md"
+      used_for: "API foundation and integration boundaries"
+evidence_mapping:
+  T001:
+    - upstream: "GTA6_SHORTS_FACTORY_AGENT_BRIEF.md#Product principles"
+      output: "app/config.py"
+      evidence: "Everygen and CUA default to false"
+    - upstream: "architecture-diagram.md#Application Architecture"
+      output: "app/main.py"
+      evidence: "Health and dashboard summary routes respond with HTTP 200"
+traceability:
+  - requirement: "REQ-001"
+    plan_item: "1.1"
+    task: "T001"
+    files: ["app/main.py", "app/models.py"]
+    status: "completed"
+  - requirement: "REQ-004"
+    plan_item: "1.1"
+    task: "T001"
+    files: ["app/config.py"]
+    status: "completed"
+  - requirement: "REQ-008"
+    plan_item: "1.1"
+    task: "T001"
+    files: ["app/config.py", "app/models.py"]
+    status: "completed"
+  - requirement: "REQ-003"
+    plan_item: "2.2"
+    task: "T003"
+    files: ["app/services.py", "app/storage.py"]
+    status: "completed"
+  - requirement: "REQ-009"
+    plan_item: "2.1"
+    task: "T002"
+    files: ["app/storage.py"]
+    status: "completed"
+protocol_violation: false
+errors: []
+warnings:
+  - "No external accounts, credits, CUA sessions, or publishing actions were enabled."
+test_results:
+  T001:
+    command: ".venv/bin/pytest -q"
+    passed: 2
+    failed: 0
+    skipped: 0
+    failures: []
+  T002:
+    command: ".venv/bin/pytest -q"
+    passed: 5
+    failed: 0
+    skipped: 0
+    failures: []
+  T003:
+    command: ".venv/bin/pytest -q"
+    passed: 5
+    failed: 0
+    skipped: 0
+    failures: []
+  T004:
+    command: "curl /"
+    passed: 1
+    failed: 0
+    skipped: 0
+    failures: []
+endpoint_probes:
+  - method: "GET"
+    path: "/health"
+    status: 200
+    result: "PASS"
+  - method: "GET"
+    path: "/api/dashboard/summary"
+    status: 200
+    result: "PASS"

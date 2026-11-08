@@ -1,0 +1,84 @@
+batch_id: "B02"
+completed_tasks: ["T004", "T005", "T006", "T007", "T008", "T009", "T010", "T011", "T012"]
+blocked_tasks: []
+summary: >
+  Completed the local-first Founder Control Tower, production pipeline, CEO
+  orchestration, MCP registry, Everygen mock adapter, guarded CUA broker,
+  publishing approval locks with dry-run delivery, analytics, documentation,
+  and the full regression suite.
+files_changed:
+  dashboard:
+    - "app/static/index.html"
+    - "app/static/styles.css"
+    - "app/static/app.js"
+    - "app/static/favicon.svg"
+  media:
+    - "app/media.py"
+    - "app/routes.py"
+  orchestration:
+    - "app/orchestrator.py"
+    - "app/services.py"
+  integrations:
+    - "app/integrations.py"
+    - "app/cua.py"
+  publishing:
+    - "app/publishing.py"
+    - "app/analytics.py"
+  persistence:
+    - "app/storage.py"
+    - "app/seed.py"
+    - "app/config.py"
+    - "app/main.py"
+  docs:
+    - "README.md"
+    - "docs/DECISION_REPORT.md"
+    - "docs/OPERATIONS.md"
+    - ".env.example"
+  tests:
+    - "tests/conftest.py"
+    - "tests/test_dashboard.py"
+    - "tests/test_workflows.py"
+    - "tests/test_media_pipeline.py"
+    - "tests/test_orchestration.py"
+    - "tests/test_integrations.py"
+    - "tests/test_security.py"
+verification:
+  test_command: ".venv/bin/pytest -q"
+  passed: 36
+  failed: 0
+  warnings: 1
+  warning_detail: "Starlette TestClient deprecation notice for httpx; unrelated to application behavior."
+  probes:
+    - method: "GET"
+      path: "/health"
+      status: 200
+    - method: "GET"
+      path: "/"
+      status: 200
+    - method: "GET"
+      path: "/api/dashboard/summary"
+      status: 200
+    - method: "GET"
+      path: "/api/providers"
+      status: 200
+    - method: "GET"
+      path: "/api/departments"
+      status: 200
+  browser_smoke:
+    - "All ten dashboard views render without console or page errors."
+    - "Emergency stop and resume work from the sidebar."
+    - "Mobile viewport has no horizontal overflow."
+    - "Upload, rights, CEO plan, task, MCP, cost, and backup flows exercised."
+external_actions:
+  everygen_live_calls: 0
+  mcp_live_calls: 0
+  cua_browser_sessions: 0
+  live_platform_publishes: 0
+  paid_spend_usd: 0.0
+safety:
+  everygen_default: "disabled"
+  cua_default: "disabled"
+  publishing_default: "dry-run"
+  rights_gate: "enforced"
+  founder_approval: "enforced"
+  emergency_stop: "enforced"
