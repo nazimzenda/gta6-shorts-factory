@@ -464,6 +464,7 @@ async function renderHome() {
           <button class="btn primary" data-action="go" data-view="ceo">Send strategic objective</button>
           <button class="btn" data-action="go" data-view="approvals">Review approvals ${approvals.length ? `· ${approvals.length}` : ''}</button>
           <button class="btn ghost" data-action="go" data-view="production">Open production</button>
+          <button class="btn ghost" data-action="go" data-view="pipeline">Shorts Pipeline</button>
         </div>
       </div>
       <div class="card health-card">
