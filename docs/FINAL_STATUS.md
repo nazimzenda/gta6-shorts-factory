@@ -122,6 +122,22 @@ extension for everygen.ai or use a browser/profile without it.
 
 ---
 
+## 2b. Dry-run publish result (2026-11-08)
+
+Both fixed clips were uploaded to the real platform review screens through the
+Cua VM:
+
+| Clip | YouTube | TikTok |
+|---|---|---|
+| clip00005 | `dry_run` — stopped at review | `dry_run` — stopped before Post |
+| clip00006 | `dry_run` — stopped at review | `dry_run` — stopped before Post |
+
+**4/4 dry runs, 0 failures, nothing published publicly.** The first TikTok
+attempt for clip00005 hit a geckodriver read timeout; a retry completed
+successfully. This is recorded in the pipeline DB and dashboard.
+
+---
+
 ## 3. Resume after subscribing / topping up
 
 1. Open the CUA viewer and complete Everygen checkout, **or** sign out and sign
