@@ -912,11 +912,20 @@ class PipelineClipRequest(BaseModel):
     rights_ack: bool = False
 
 
+class PipelinePublishRequest(BaseModel):
+    live: bool = False
+    confirm: bool = False
+    rights_ack: bool = False
+    platforms: list[str] = Field(default_factory=list)
+    limit: int = Field(default=4, ge=1, le=12)
+
+
 _pipeline_db_cache: PipelineDB | None = None
 _pipeline_db_path_cache: str | None = None
 _pipeline_clip_jobs: dict[str, dict[str, Any]] = {}
 _pipeline_clip_lock = threading.Lock()
 _pipeline_clip_busy = False
+_pipeline_publish_busy = False
 
 
 def _pipeline_database() -> PipelineDB:
@@ -1014,6 +1023,115 @@ def _run_pipeline_clip_job(
     finally:
         with _pipeline_clip_lock:
             _pipeline_clip_busy = False
+
+
+def _run_pipeline_publish_job(
+    run_id: str,
+    platforms: list[str],
+    limit: int,
+    live: bool,
+) -> None:
+    global _pipeline_publish_busy
+    stats: dict[str, Any] = {"live": live, "platforms": platforms}
+    try:
+        from pipeline.orchestrator import Pipeline
+
+        pipeline_settings = load_pipeline_settings()
+        pipeline_settings.live = live
+        pipeline = Pipeline(pipeline_settings)
+        store.audit(
+            "pipeline",
+            "publish_job_started",
+            run_id,
+            {"live": live, "platforms": platforms, "limit": limit},
+        )
+        with _pipeline_clip_lock:
+            job = _pipeline_clip_jobs.get(run_id)
+            if job:
+                job.update({"status": "running"})
+        pipeline.prepare()
+        stats.update(
+            pipeline.publish(
+                limit=limit,
+                platforms=platforms or None,
+                live=live,
+                run_id=run_id,
+            )
+        )
+        pipeline.db.finish_run(run_id, "completed", stats)
+        store.audit("pipeline", "publish_job_completed", run_id, stats)
+        with _pipeline_clip_lock:
+            job = _pipeline_clip_jobs.get(run_id)
+            if job:
+                job.update({"status": "completed", **stats})
+    except Exception as error:  # noqa: BLE001
+        try:
+            from pipeline.config import load_settings
+
+            PipelineDB(load_settings().db_path).finish_run(
+                run_id, "failed", stats, str(error)
+            )
+        except Exception:
+            pass
+        store.audit(
+            "pipeline",
+            "publish_job_failed",
+            run_id,
+            {"error": str(error)[:800], **stats},
+        )
+        with _pipeline_clip_lock:
+            job = _pipeline_clip_jobs.get(run_id)
+            if job:
+                job.update(
+                    {"status": "failed", "error": str(error)[:1000], **stats}
+                )
+    finally:
+        with _pipeline_clip_lock:
+            _pipeline_publish_busy = False
+
+
+@router.post("/pipeline/publish", status_code=202, tags=["pipeline"])
+def pipeline_publish(
+    payload: PipelinePublishRequest, background: BackgroundTasks
+) -> dict[str, Any]:
+    global _pipeline_publish_busy
+    if payload.live and not (payload.confirm and payload.rights_ack):
+        raise ValidationProblem(
+            "confirm the public-publish and rights checkboxes before going live"
+        )
+    platforms = [
+        platform
+        for platform in payload.platforms
+        if platform in {"youtube", "tiktok"}
+    ]
+    with _pipeline_clip_lock:
+        if _pipeline_publish_busy:
+            raise Conflict("another publish job is already running")
+        _pipeline_publish_busy = True
+        run_id = _pipeline_database().create_run("publish-manual")
+        _pipeline_clip_jobs[run_id] = {
+            "job_id": run_id,
+            "kind": "publish",
+            "status": "queued",
+            "live": bool(payload.live),
+            "platforms": platforms,
+            "limit": int(payload.limit),
+            "error": None,
+        }
+    background.add_task(
+        _run_pipeline_publish_job,
+        run_id,
+        platforms,
+        int(payload.limit),
+        bool(payload.live),
+    )
+    return {
+        "ok": True,
+        "job_id": run_id,
+        "live": bool(payload.live),
+        "platforms": platforms,
+        "limit": int(payload.limit),
+    }
 
 
 @router.post("/pipeline/clip", status_code=202, tags=["pipeline"])

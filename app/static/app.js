@@ -1137,15 +1137,20 @@ async function renderIntegrations() {
 
 /* ---------------------------------------------------------------------- CUA */
 async function renderCUA() {
-  const [sessions, actions, providers] = await Promise.all([
+  const [sessions, actions, providers, pipelineStatus] = await Promise.all([
     api('/cua/sessions'),
     api('/cua/actions'),
     api('/providers'),
+    api('/pipeline/status'),
   ]);
   const cuaConfig = providers.cua || {};
   const active = sessions.filter((session) => session.status === 'active').length;
+  const vm = pipelineStatus.sandbox || {};
+  const vmState = vm.state || (vm.ok ? 'unknown' : 'offline');
+  const vmView = pipelineStatus.view_url || vm.view || '';
   return `
     <div class="section-head"><div><h2>Guarded computer use</h2><p>Allowlisted domains, per-session capability tokens, action limits, expiry, evidence files, and an emergency stop. Publishing is never available here.</p></div><div class="actions"><button class="btn red" data-action="cua-emergency">CUA emergency stop</button></div></div>
+    <div class="note ${vmState === 'running' || vmState === 'ready' ? 'green' : 'danger'}" style="margin-bottom:16px"><strong>Live pipeline CUA VM: ${h(vm.name || 'dev')} · ${h(vmState)}.</strong> This is the actual signed-in browser session used by the clipper and publisher. The “CUA Sessions” below are the control-tower approval broker, not the VM. ${vmView ? `<a class="btn xs primary" href="${h(vmView)}" target="_blank" rel="noopener">Open CUA viewer</a>` : ''} <a class="btn xs ghost" href="#pipeline">Open Shorts Pipeline</a></div>
     <div class="note ${cuaConfig.enabled ? 'green' : 'danger'}" style="margin-bottom:16px"><strong>CUA is ${cuaConfig.enabled ? 'enabled for observe/draft sessions' : 'disabled by configuration'}.</strong> ${cuaConfig.enabled ? `Allowed domains: ${h((cuaConfig.allowed_domains || []).join(', '))}. Max ${cuaConfig.max_actions} actions · ${cuaConfig.session_minutes} minute sessions.` : 'Enable CUA_ENABLED only after the policy review and sandbox test pass.'}</div>
     <div class="stat-strip" style="margin-bottom:16px">
       <div class="stat"><div class="n">${sessions.length}</div><div class="l">Sessions</div></div>
@@ -1252,6 +1257,7 @@ async function renderPipeline() {
             <div><div class="l">TikTok / day</div><div class="v">${fmtNum(config.daily_limit_tiktok)}</div></div>
             <div><div class="l">Sandbox</div><div class="v">${h(sandboxState)}</div></div>
           </div>
+          <div class="note warning mt-16"><strong>DRY RUN ≠ published.</strong> Dry-run uploads to the platform review screen only. Use <code>publish --live</code> or the <strong>Publish live</strong> button to post publicly.</div>
           <div class="note info mt-16"><strong>Run it:</strong> ${isClip ? '<code>python -m pipeline.run clip --url &lt;youtube-link&gt; --rights-ack</code> for one source, or <code>python -m pipeline.run cycle --mode clip --live</code> to repeat.' : '<code>python -m pipeline.run cycle</code> for a dry run, <code>python -m pipeline.run cycle --live</code> to publish, or <code>python -m pipeline.run worker --live</code> to repeat on an interval.'}</div>
         </div>
       </div>
@@ -1262,7 +1268,8 @@ async function renderPipeline() {
     </div>
     <div class="grid-2-1 mt-16">
       <div class="card">
-        <div class="card-head"><div><h3>Publish attempts</h3><div class="sub">One row per platform, never duplicated</div></div><span class="badge">${posts.length}</span></div>
+        <div class="card-head"><div><h3>Publish attempts</h3><div class="sub">One row per platform, never duplicated</div></div><div class="actions"><button class="btn xs red" data-action="pipeline-live-publish">Publish live</button><span class="badge">${posts.length}</span></div></div>
+        <div class="note warning" style="margin-bottom:12px"><strong>DRY RUN rows are not public.</strong> Only rows marked PUBLISHED exist on YouTube/TikTok.</div>
         ${posts.length ? `<div class="table-wrap"><table class="table"><thead><tr><th>Generation</th><th>Platform</th><th>Status</th><th>Attempts</th><th>Updated</th></tr></thead><tbody>${posts.map((post) => `<tr><td class="mono tiny">${h(post.generation_id)}</td><td>${h(titleCase(post.platform))}</td><td>${statusBadge(post.status)}${post.error ? `<div class="tiny faint">${h(truncate(post.error, 70))}</div>` : ''}${post.remote_hint ? `<div class="tiny mono faint">${h(truncate(post.remote_hint, 70))}</div>` : ''}</td><td class="tiny">${fmtNum(post.attempts)}</td><td class="tiny muted">${timeAgo(post.updated_at)}</td></tr>`).join('')}</tbody></table></div>` : emptyState('No publish attempts yet.')}
       </div>
       <div class="card">
@@ -1661,6 +1668,19 @@ const FORMS = {
     closeModal();
     await renderView();
   },
+  async 'pipeline-live-publish'(form) {
+    if (!form.elements.confirm?.checked || !form.elements.rights_ack?.checked) {
+      throw new Error('Confirm both checkboxes before publishing live.');
+    }
+    const result = await api('/pipeline/publish', {
+      method: 'POST',
+      body: { live: true, confirm: true, rights_ack: true, limit: 4 },
+    });
+    toast(`Live publish job ${result.job_id} started.`, 'success');
+    closeModal();
+    await afterChange();
+    setTimeout(() => { renderView().catch(() => {}); }, 12000);
+  },
   async 'pipeline-clip'(form) {
     const values = formValues(form);
     const urls = String(values.urls || '')
@@ -1729,6 +1749,16 @@ const ACTIONS = {
   'close-modal': () => closeModal(),
   go: (_, element) => navigate(element.dataset.view),
   refresh: () => renderView(),
+  'pipeline-live-publish': () => openModal(
+    'Publish live',
+    'This sends the ready clips to YouTube Shorts and TikTok with the final Publish/Post button.',
+    `<form data-form="pipeline-live-publish">
+      <div class="note danger"><strong>Public action.</strong> The CUA VM will open YouTube Studio and TikTok Studio and click the final publish button for every ready clip. This cannot be undone from the dashboard.</div>
+      <div class="field mt-16"><label class="tiny"><input type="checkbox" name="confirm" required /> I understand this publishes publicly.</label></div>
+      <div class="field mt-8"><label class="tiny"><input type="checkbox" name="rights_ack" required /> I own these clips or have permission to publish them.</label></div>
+      <div class="form-actions"><button class="btn red" type="submit">Publish live now</button><button class="btn ghost" type="button" data-action="close-modal">Cancel</button></div>
+    </form>`
+  ),
   'toggle-stop': async () => {
     const stopped = Boolean(state.summary?.emergency_stop);
     if (!stopped && !window.confirm('Engage emergency stop? All mutating API actions will be blocked.')) return;

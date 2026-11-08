@@ -530,6 +530,15 @@ def test_pipeline_dashboard_api_is_read_only(client) -> None:
     assert client.get("/api/pipeline/showcase").status_code == 200
 
 
+def test_pipeline_live_publish_requires_confirmations(client) -> None:
+    response = client.post(
+        "/api/pipeline/publish",
+        json={"live": True, "confirm": False, "rights_ack": False},
+    )
+    assert response.status_code == 400
+    assert "confirm" in response.text.lower()
+
+
 def test_pipeline_clip_requires_rights_ack(client) -> None:
     response = client.post(
         "/api/pipeline/clip",

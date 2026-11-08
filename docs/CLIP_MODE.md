@@ -130,8 +130,15 @@ Open <http://127.0.0.1:8000> → **Shorts Pipeline**.
 - **Clip showcase** button: watch every rendered MP4 in a simple gallery.
 - **Local clips** table: each row has a **Play** link and the exact file path.
 - **Publish attempts**: 4 rows per clip (YouTube + TikTok), with dry-run/live
-  status.
-- **Recent cycles**: background clip jobs and pipeline cycles are recorded here.
+  status. **DRY RUN is not public**; only `PUBLISHED` rows exist on the platforms.
+- **Publish live** button: opens a confirmation modal with two checkboxes
+  (public action + rights). It starts a background live-publish job through the
+  CUA VM. The rows change from `DRY RUN` to `PUBLISHED` when done.
+- **Recent cycles**: background clip jobs, publish jobs and pipeline cycles are
+  recorded here.
+- **CUA Sessions** tab: the top card is the **live pipeline CUA VM** with the
+  viewer link. The approval-broker sessions below are a separate control-tower
+  feature.
 
 The dashboard uses the same `PIPELINE_RIGHTS_ACK` model: the form requires the
 “I have permission to reuse these videos” checkbox. Only one background clip

@@ -44,7 +44,9 @@ Dashboard:
 - **Add YouTube sources** form for multiple links / multiple people.
 - **Clip showcase** gallery with an HTML5 player.
 - **Play** link on every local clip.
-- Publish attempts and background clip jobs appear in the same view.
+- **Publish live** button with explicit public-action + rights confirmations.
+- Publish attempts and background clip/publish jobs appear in the same view.
+- **CUA Sessions** tab now shows the live pipeline CUA VM at the top with a viewer link, separate from the approval-broker sessions.
 
 Commands:
 
@@ -80,7 +82,7 @@ reuse. See [CLIP_MODE.md](./CLIP_MODE.md).
 | Dashboard **Shorts Pipeline** view | Complete |
 | systemd worker sample | Complete |
 | Documentation and runbook | Complete |
-| Tests | **66 passed** |
+| Tests | **67 passed** |
 
 Verified against the live services:
 

@@ -121,8 +121,11 @@ fallback) and common typos such as `Viciti` → `Vice City` are corrected. Set
 `PIPELINE_CLIP_SHOW_CAPTIONS=false` for a clean video with no subtitles. Clip
 mode requires an explicit rights acknowledgement: only clip videos you own or
 have permission to reuse. The dashboard's **Shorts Pipeline** tab also has an
-**Add YouTube sources** form for multiple links, a clip showcase and per-clip
-Play links. See [docs/CLIP_MODE.md](./docs/CLIP_MODE.md).
+**Add YouTube sources** form for multiple links, a clip showcase, per-clip Play
+links and a **Publish live** button with explicit public-action/rights
+confirmations. The **CUA Sessions** tab shows the live pipeline CUA VM at the
+top. **DRY RUN rows are not public**; only `PUBLISHED` rows exist on
+YouTube/TikTok. See [docs/CLIP_MODE.md](./docs/CLIP_MODE.md).
 
 Dry-run is the default. Live publishing requires `--live` (or
 `PIPELINE_LIVE=true`) and enforces per-platform daily caps. If the control
